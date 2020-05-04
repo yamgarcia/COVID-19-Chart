@@ -29,8 +29,10 @@ const Home = () => {
     try {
       const dataDay = response.data.result;
       const dataInfected = Object.entries(dataDay).map((day, i) => {
+        setInfected(day[1].confirmed);
         console.log(day[1].confirmed);
       });
+      console.log(infected);
       const dataCount = response.data.count;
       setDays(dataDay);
       setCurrent(dataCount);
