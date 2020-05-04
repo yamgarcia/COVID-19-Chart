@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Chart } from "react-charts";
 import axios from "axios";
+import { render } from "react-dom";
+import { Chart } from "react-google-charts";
+
+//https://react-google-charts.com/geo-chart
 
 const Home = () => {
   const [days, setDays] = useState([]);
+  const [infected, setInfected] = useState([]);
   const [current, setCurrent] = useState(0);
   const [load, setLoad] = useState(true);
+
+  const data = [
+    ["Country", "Popularity"],
+    ["Germany", 200],
+    ["United States", 300],
+    ["Brazil", 400],
+    ["Canada", 500],
+    ["France", 600],
+    ["RU", 700],
+  ];
 
   async function loadDays() {
     days && setLoad(true);
@@ -14,6 +28,9 @@ const Home = () => {
     );
     try {
       const dataDay = response.data.result;
+      const dataInfected = Object.entries(dataDay).map((day, i) => {
+        console.log(day[1].confirmed);
+      });
       const dataCount = response.data.count;
       setDays(dataDay);
       setCurrent(dataCount);
@@ -26,28 +43,6 @@ const Home = () => {
     loadDays();
   }, [load]);
 
-  const data = React.useMemo(
-    () => [
-      {
-        label: "Series 1",
-        data: [
-          { x: 1, y: 12 },
-          { x: 2, y: 15 },
-          { x: 3, y: 11 },
-        ],
-      },
-    ],
-    []
-  );
-
-  const axes = React.useMemo(
-    () => [
-      { primary: true, type: "linear", position: "bottom" },
-      { type: "linear", position: "left" },
-    ],
-    []
-  );
-
   return (
     <div
       style={{
@@ -55,8 +50,27 @@ const Home = () => {
         height: "300px",
       }}
     >
+      <div className='App'>
+        <Chart
+          chartEvents={[
+            {
+              eventName: "select",
+              callback: ({ chartWrapper }) => {
+                const chart = chartWrapper.getChart();
+                const selection = chart.getSelection();
+                if (selection.length === 0) return;
+                const region = data[selection[0].row + 1];
+                console.log("Selected : " + region);
+              },
+            },
+          ]}
+          chartType='GeoChart'
+          width='100%'
+          height='400px'
+          data={data}
+        />
+      </div>
       {console.log(days)}
-      <Chart data={data} axes={axes} />
       <h3>Days</h3>
       <h3>Total: {current}</h3>
       {Object.keys(days).map((day, i) => (
