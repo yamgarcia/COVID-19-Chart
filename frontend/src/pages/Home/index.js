@@ -121,16 +121,8 @@ const Home = () => {
           data={mapData}
         />
       </div>
-      {/* {console.log("infected")} */}
-      <h3>Days</h3>
-      <h3>Total: {current}</h3>
-      {/* {infected &&
-        Object.keys(days).map((day, i) => (
-          <li key={i}>
-            <span>{JSON.stringify(days[day].confirmed)}</span>
-          </li>
-        ))} */}
-      {/* {infected && */}
+      <h3>Total Days: {current}</h3>
+
       <ul>
         {cases.length > 0 &&
           cases.map((day, i) => (
