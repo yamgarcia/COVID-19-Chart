@@ -1,39 +1,60 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { render } from "react-dom";
 import { Chart } from "react-google-charts";
 
 //https://react-google-charts.com/geo-chart
 
 const Home = () => {
   const [days, setDays] = useState([]);
-  const [infected, setInfected] = useState([]);
+  const [cases, setCases] = useState([]);
   const [current, setCurrent] = useState(0);
+  const [brazilTotal, setBrazilTotal] = useState(0);
   const [load, setLoad] = useState(true);
 
-  const data = [
-    ["Country", "Popularity"],
+  const mapData = [
+    ["Country", "Infected"],
     ["Germany", 200],
     ["United States", 300],
-    ["Brazil", 400],
+    ["Brazil", brazilTotal],
     ["Canada", 500],
     ["France", 600],
     ["RU", 700],
   ];
+  const lineData = [
+    ["x", "Brazil", "USA", "France", "Russia"],
+    [0, 0, 0, 0, 0],
+    [1, 10, 5, 20, 5],
+    [2, 23, 15, 5, 5],
+    [3, 17, 9, 5, 15],
+    [4, 18, 10, 5, 5],
+    [5, 9, 5, 5, 15],
+    [6, 11, 3, 5, 5],
+    [7, 27, 19, 5, 15],
+    [8, 27, 19, 5, 5],
+    [9, 27, 19, 5, 5],
+    [10, 28, 19, 5, 10],
+  ];
 
   async function loadDays() {
     days && setLoad(true);
-    const response = await axios.get(
-      "https://covidapi.info/api/v1/country/BRA"
-    );
     try {
-      const dataDay = response.data.result;
-      const dataInfected = Object.entries(dataDay).map((day, i) => {
-        setInfected(day[1].confirmed);
-        console.log(day[1].confirmed);
-      });
-      console.log(infected);
+      const response = await axios.get(
+        "https://covidapi.info/api/v1/country/BRA"
+      );
       const dataCount = response.data.count;
+      const dataDay = response.data.result;
+
+      const array = [];
+      Object.keys(dataDay).map((day, i) => {
+        const caseObj = dataDay[day];
+        array.push(caseObj);
+        console.log(brazilTotal);
+        setBrazilTotal(dataDay[day].confirmed);
+      });
+      setCases(...cases, array);
+
+      console.log(brazilTotal);
+
       setDays(dataDay);
       setCurrent(dataCount);
     } catch (e) {
@@ -48,10 +69,38 @@ const Home = () => {
   return (
     <div
       style={{
-        width: "400px",
-        height: "300px",
+        width: "700px",
+        height: "auto",
       }}
     >
+      {/* LINE CHART */}
+
+      <Chart
+        width={"600px"}
+        height={"400px"}
+        chartType='LineChart'
+        loader={<div>Loading Chart</div>}
+        data={lineData}
+        options={{
+          hAxis: {
+            title: "Time",
+          },
+          vAxis: {
+            title: "Infected",
+          },
+          series: {
+            0: { curveType: "function" },
+            1: { curveType: "function" },
+            2: { curveType: "function" },
+            3: { curveType: "function" },
+            4: { curveType: "function" },
+          },
+        }}
+      />
+
+      {/* MAP CHART */}
+
+      {console.log(cases)}
       <div className='App'>
         <Chart
           chartEvents={[
@@ -61,7 +110,7 @@ const Home = () => {
                 const chart = chartWrapper.getChart();
                 const selection = chart.getSelection();
                 if (selection.length === 0) return;
-                const region = data[selection[0].row + 1];
+                const region = mapData[selection[0].row + 1];
                 console.log("Selected : " + region);
               },
             },
@@ -69,17 +118,27 @@ const Home = () => {
           chartType='GeoChart'
           width='100%'
           height='400px'
-          data={data}
+          data={mapData}
         />
       </div>
-      {console.log(days)}
+      {/* {console.log("infected")} */}
       <h3>Days</h3>
       <h3>Total: {current}</h3>
-      {Object.keys(days).map((day, i) => (
-        <li key={i}>
-          <span>{day}</span>
-        </li>
-      ))}
+      {/* {infected &&
+        Object.keys(days).map((day, i) => (
+          <li key={i}>
+            <span>{JSON.stringify(days[day].confirmed)}</span>
+          </li>
+        ))} */}
+      {/* {infected && */}
+      <ul>
+        {cases.length > 0 &&
+          cases.map((day, i) => (
+            <li key={i}>
+              <span>{JSON.stringify(day.confirmed)}</span>
+            </li>
+          ))}
+      </ul>
     </div>
   );
 };
