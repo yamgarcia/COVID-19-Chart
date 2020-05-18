@@ -15,7 +15,10 @@
  <img src="/screenshots/covid-Map.jpg" width="610px;" alt="covid-map"/>
 </div>
 </div>
----
+
+### 📊 APIs
+- <a href="https://documenter.getpostman.com/view/2568274/SzS8rjbe?version=latest"> CovidAPI  </a>
+- <a href="https://restcountries.eu/"> REST COUNTRIES </a>
 
 ### :mortar_board: Fork it
 
@@ -26,9 +29,9 @@
 
 ### 👨🏽‍💻 Contribute
 
-- Add Google's line chart
+- Add Google's line-chart
 - Add data for remaining countries
-- Create iterative UI
+- Create interactive UI and working navbar
 - Do something that can fight COVID-19
 - <a href="https://secure.vghfoundation.ca/site/Donation2?df_id=2822&mfc_pref=T&2822.donation=form1&_ga=2.249858566.1008709283.1589783245-1400692700.1589783245&_gac=1.120644218.1589783246.CjwKCAjwwYP2BRBGEiwAkoBpAm5mcUbMVsLL2pcTP8AX4ai1iZflqsubbuVNoMFZmUKi7g9s8Nja0BoChg0QAvD_BwE">Support COVID-19 health care heros!</a>
 
