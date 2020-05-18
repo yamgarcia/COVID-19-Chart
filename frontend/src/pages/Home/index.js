@@ -6,41 +6,99 @@ import { Chart } from "react-google-charts";
 // https://react-google-charts.com/
 
 const Home = () => {
-  const [days, setDays] = useState([]);
   const [cases, setCases] = useState([]);
   const [current, setCurrent] = useState(0);
   const [brazilTotal, setBrazilTotal] = useState(0);
-  const [load, setLoad] = useState(true);
-  const [allCountries, setAllCountries] = useState(
-    ["Germany", 200],
-    ["United States", 300],
+  const [load, setLoad] = useState(false);
+  const [allCountriesAPI, setAllCountriesAPI] = useState([]);
+  const [allCountriesAPICode, setAllCountriesAPICode] = useState([]);
+
+  //! Replace this variable with allCountriesAPI once it's populated
+  const allCountries = [
+    ["Germany", 200000],
+    ["United States", 250000],
     ["Brazil", brazilTotal],
-    ["Canada", 500],
-    ["France", 600],
-    ["RU", 700],
-    ["Qatar", brazilTotal],
-    ["Bahrain", brazilTotal]
-  );
-  const countries = [
-    "Germany",
-    "United States",
-    "Brazil",
-    "Canada",
-    "France",
-    "RU",
-    "Qatar",
-    "Bahrain",
+    ["Canada", 150000],
+    ["France", 100000],
+    ["RU", 300000],
   ];
-
-  // const all = allCountries.map((country) => [country]);
-
   const mapDataConfig = ["Country", "Infected"];
-
   const mapData = [mapDataConfig, ...allCountries];
 
-  async function loadDays() {
-    days && setLoad(true);
+  useEffect(() => {
+    loadCountries();
+  }, [load]);
 
+  /*
+    Populates allCountriesAPI and allCountriesAPICode and setLoad to true and then runs:
+    loadDays();
+    insertInfected();
+  */
+  async function loadCountries() {
+    try {
+      const response = await axios.get("https://restcountries.eu/rest/v2/all");
+
+      //? get the country names into allCountriesAPI array
+      const countriesArray = [];
+      response.data.map((country) => {
+        return countriesArray.push([...allCountriesAPI, country.name]);
+      });
+      setAllCountriesAPI(countriesArray);
+
+      //? get the codes into countriesArrayCode array
+      const countriesArrayCode = [];
+      response.data.map((country) => {
+        return countriesArrayCode.push(...allCountriesAPICode, [
+          country.alpha3Code,
+          country.name,
+        ]);
+      });
+      setAllCountriesAPICode(countriesArrayCode);
+
+      setTimeout(() => console.log(allCountriesAPI), 5000);
+    } catch (e) {
+      console.error(e.message);
+    } finally {
+      setLoad(true);
+      loadDays();
+      insertInfected();
+    }
+  }
+
+  /*
+    loads the infected number for each country
+  */
+  async function insertInfected() {
+    try {
+      allCountriesAPICode.map((countryCode) => {
+        console.log(countryCode[0]);
+        const response = async () =>
+          await axios.get(
+            `https://covidapi.info/api/v1/country/${countryCode[0]}`
+          );
+        console.log(response);
+        if (!response) return 0;
+        const dataDay = response.data.result;
+        let countryValue = 0;
+
+        Object.keys(dataDay).map((day, i) => {
+          return (countryValue = dataDay[day].confirmed);
+        });
+        allCountriesAPI.map((country) => {
+          console.log(country);
+          if (!country[1]) country[1] = countryValue;
+        });
+        return 0;
+      });
+    } catch (e) {
+      console.error(e.message);
+    }
+  }
+
+  /*
+  loads the cases and for now the brazil number of infected
+  */
+  async function loadDays() {
     try {
       const response = await axios.get(
         "https://covidapi.info/api/v1/country/BRA"
@@ -52,38 +110,15 @@ const Home = () => {
       Object.keys(dataDay).map((day, i) => {
         const caseObj = dataDay[day];
         array.push(caseObj);
-        setBrazilTotal(dataDay[day].confirmed);
+        return setBrazilTotal(dataDay[day].confirmed);
       });
       setCases(...cases, array);
 
-      setDays(dataDay);
       setCurrent(dataCount);
     } catch (e) {
       console.error(e.message);
     }
   }
-
-  async function loadCountries() {
-    try {
-      const response = await axios.get("https://restcountries.eu/rest/v2/all");
-      console.log(response.data);
-      //TODO
-      //! 0. (Do it before) Fix mapData to accept and array of arrays
-      //! 1. Set array of countries as [countryName, countryCode  ]
-      //! 2. Map through the array using the covidAPI with each code
-      //! 3. For each iteration set an array of countries as [ countryName, countryValue]
-      //! 4. Pass the array into mapData and cross your fingers
-    } catch (e) {
-      console.error(e.message);
-    } finally {
-      loadDays();
-    }
-  }
-
-  useEffect(() => {
-    loadCountries();
-    // loadDays();
-  }, [load]);
 
   return (
     <div
@@ -92,27 +127,29 @@ const Home = () => {
         height: "auto",
       }}
     >
-      {/* {console.log(cases)} */}
-      <div className='App'>
-        <Chart
-          chartEvents={[
-            {
-              eventName: "select",
-              callback: ({ chartWrapper }) => {
-                const chart = chartWrapper.getChart();
-                const selection = chart.getSelection();
-                if (selection.length === 0) return;
-                const region = mapData[selection[0].row + 1];
-                console.log("Selected : " + region);
+      {/* {console.log(allCountriesAPI)} */}
+      {load && (
+        <div className='App'>
+          <Chart
+            chartEvents={[
+              {
+                eventName: "select",
+                callback: ({ chartWrapper }) => {
+                  const chart = chartWrapper.getChart();
+                  const selection = chart.getSelection();
+                  if (selection.length === 0) return;
+                  const region = mapData[selection[0].row + 1];
+                  console.log("Selected : " + region);
+                },
               },
-            },
-          ]}
-          chartType='GeoChart'
-          width='100%'
-          height='400px'
-          data={mapData}
-        />
-      </div>
+            ]}
+            chartType='GeoChart'
+            width='100%'
+            height='400px'
+            data={mapData}
+          />
+        </div>
+      )}
       <h3>Total Days: {current}</h3>
 
       <ul>
