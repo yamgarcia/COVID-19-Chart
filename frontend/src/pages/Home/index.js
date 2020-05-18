@@ -23,7 +23,7 @@ const Home = () => {
     ["RU", 300000],
   ];
   const mapDataConfig = ["Country", "Infected"];
-  const mapData = [mapDataConfig, ...allCountries];
+  const mapData = [mapDataConfig, ...allCountriesAPI];
 
   useEffect(() => {
     loadCountries();
@@ -38,28 +38,20 @@ const Home = () => {
     try {
       const response = await axios.get("https://restcountries.eu/rest/v2/all");
 
-      //? get the country names into allCountriesAPI array
-      const countriesArray = [];
-      response.data.map((country) => {
-        return countriesArray.push([...allCountriesAPI, country.name]);
-      });
-      setAllCountriesAPI(countriesArray);
-
       //? get the codes into countriesArrayCode array
       const countriesArrayCode = [];
-      response.data.map((country) => {
-        return countriesArrayCode.push(...allCountriesAPICode, [
-          country.alpha3Code,
-          country.name,
-        ]);
-      });
-      setAllCountriesAPICode(countriesArrayCode);
-
-      setTimeout(() => console.log(allCountriesAPI), 5000);
+      countriesArrayCode.length === 0 &&
+        response.data.map((country) => {
+          return countriesArrayCode.push(...allCountriesAPICode, [
+            country.alpha3Code,
+            country.name,
+          ]);
+        });
+      allCountriesAPICode.length === 0 &&
+        setAllCountriesAPICode(countriesArrayCode);
     } catch (e) {
       console.error(e.message);
     } finally {
-      setLoad(true);
       loadDays();
       insertInfected();
     }
@@ -69,29 +61,26 @@ const Home = () => {
     loads the infected number for each country
   */
   async function insertInfected() {
+    let arrayOfCountries = [];
     try {
       allCountriesAPICode.map((countryCode) => {
-        console.log(countryCode[0]);
-        const response = async () =>
-          await axios.get(
-            `https://covidapi.info/api/v1/country/${countryCode[0]}`
-          );
-        console.log(response);
-        if (!response) return 0;
-        const dataDay = response.data.result;
-        let countryValue = 0;
-
-        Object.keys(dataDay).map((day, i) => {
-          return (countryValue = dataDay[day].confirmed);
-        });
-        allCountriesAPI.map((country) => {
-          console.log(country);
-          if (!country[1]) country[1] = countryValue;
-        });
-        return 0;
+        const response = axios
+          .get(`https://covidapi.info/api/v1/country/${countryCode[0]}/latest`)
+          .then((response) => {
+            var countriesData = response.data.result;
+            Object.keys(countriesData).map((countryData) => {
+              let infectedByCountry = countriesData[countryData].confirmed;
+              let countryElement = [countryCode[1], infectedByCountry];
+              arrayOfCountries.push(countryElement);
+              setAllCountriesAPI(arrayOfCountries);
+            });
+          })
+          .catch((e) => {});
       });
     } catch (e) {
       console.error(e.message);
+    } finally {
+      setTimeout(setLoad(true), 5000);
     }
   }
 
@@ -113,7 +102,6 @@ const Home = () => {
         return setBrazilTotal(dataDay[day].confirmed);
       });
       setCases(...cases, array);
-
       setCurrent(dataCount);
     } catch (e) {
       console.error(e.message);
@@ -127,7 +115,10 @@ const Home = () => {
         height: "auto",
       }}
     >
-      {/* {console.log(allCountriesAPI)} */}
+      {allCountriesAPI.length > 0 &&
+        setTimeout(() => console.log(allCountriesAPI), 5000)}
+      {allCountries.length > 0 &&
+        setTimeout(() => console.log(allCountries), 5000)}
       {load && (
         <div className='App'>
           <Chart
@@ -209,5 +200,3 @@ export default Home;
   }}
 />
 */
-
-/* MAP CHART */

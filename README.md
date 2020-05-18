@@ -17,8 +17,10 @@
 </div>
 
 ### 📊 APIs
-- <a href="https://documenter.getpostman.com/view/2568274/SzS8rjbe?version=latest"> CovidAPI  </a>
+
+- <a href="https://documenter.getpostman.com/view/2568274/SzS8rjbe?version=latest"> CovidAPI </a>
 - <a href="https://restcountries.eu/"> REST COUNTRIES </a>
+- <a href="https://cloud.google.com/maps-platform/?utm_source=google&utm_medium=cpc&utm_campaign=FY18-Q2-global-demandgen-paidsearchonnetworkhouseads-cs-maps_contactsal_saf&utm_content=text-ad-none-none-DEV_c-CRE_289918047742-ADGP_Hybrid+%7C+AW+SEM+%7C+BKWS+~+Google+Maps-KWID_43700036076725534-kwd-21146297871-userloc_9001536&utm_term=KW_%2Bgoogle%20%2Bmaps-ST_%2Bgoogle+%2Bmaps&gclid=CjwKCAjw5Ij2BRBdEiwA0Frc9f7svPoyPaEWan_FMypURKFev9kWTSgkhClLG0-QbW9x9S1LA5Y_vhoCUMgQAvD_BwE"> Google Maps Platform API </a>
 
 ### :mortar_board: Fork it
 
