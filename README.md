@@ -6,15 +6,13 @@
   <a href="https://documenter.getpostman.com/view/2568274/SzS8rjbe?version=latest">
     <img width="600px;" alt="covid-19" src="https://beta.ctvnews.ca/content/dam/ctvnews/images/2020/3/27/1_4871398.jpg?cache_timestamp=1585334101268">
   </a>
-  
 </p>
-
 <br>
 
 ### 🦠 Covid-Map
 
 <div class="flex-container">
- <img src="/screenshots/covidMap.jpg" width="600px;" alt="covid-map"/>
+ <img src="/screenshots/covidMap.jpg" width="610px;" alt="covid-map"/>
 </div>
 </div>
 ---
