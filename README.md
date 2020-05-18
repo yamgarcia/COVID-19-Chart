@@ -1,10 +1,10 @@
 <h4 align="center">
-<img src="mobile/src/assets/logo@3x.png" width="250px" /><br>
  <b>COVID-19 Interactive map</b> 🦸‍♂️
 </h4>
 <p align="center">
+<div align="center" class="flex-container">
   <a href="https://documenter.getpostman.com/view/2568274/SzS8rjbe?version=latest">
-    <img alt="covid-19" src="https://beta.ctvnews.ca/content/dam/ctvnews/images/2020/3/27/1_4871398.jpg?cache_timestamp=1585334101268">
+    <img width="600px;" alt="covid-19" src="https://beta.ctvnews.ca/content/dam/ctvnews/images/2020/3/27/1_4871398.jpg?cache_timestamp=1585334101268">
   </a>
   
 </p>
@@ -16,7 +16,7 @@
 <div class="flex-container">
  <img src="/screenshots/covidMap.jpg" width="600px;" alt="covid-map"/>
 </div>
-
+</div>
 ---
 
 ### :mortar_board: Fork it
