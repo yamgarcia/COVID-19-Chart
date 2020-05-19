@@ -12,18 +12,7 @@ const Home = () => {
   const [load, setLoad] = useState(false);
   const [allCountriesAPI, setAllCountriesAPI] = useState([]);
   const [allCountriesAPICode, setAllCountriesAPICode] = useState([]);
-
-  //! Replace this variable with allCountriesAPI once it's populated
-  const allCountries = [
-    ["Germany", 200000],
-    ["United States", 250000],
-    ["Brazil", brazilTotal],
-    ["Canada", 150000],
-    ["France", 100000],
-    ["RU", 300000],
-  ];
-  const mapDataConfig = ["Country", "Infected"];
-  const mapData = [mapDataConfig, ...allCountriesAPI];
+  const mapDataConfig = ["Country", "Confirmed Cases"];
 
   useEffect(() => {
     loadCountries();
@@ -42,9 +31,38 @@ const Home = () => {
       const countriesArrayCode = [];
       countriesArrayCode.length === 0 &&
         response.data.map((country) => {
+          let countryCode = country.alpha3Code;
+          let countryName = country.name;
+          if (countryName === "United States of America")
+            countryName = "United States";
+          if (countryName === "Russian Federation") countryName = "Russia";
+          if (countryName === "Tanzania, United Republic of")
+            countryName = "Tanzania";
+          if (countryName === "Moldova (Republic of)") countryName = "Moldova";
+          if (countryName === "Congo (Democratic Republic of the)")
+            countryName = "Democratic Republic of the Congo";
+          if (countryName === "Macedonia (the former Yugoslav Republic of)")
+            countryName = "Macedonia";
+          if (countryName === "Viet Nam") countryName = "Vietnam";
+          if (countryName === "Syrian Arab Republic") countryName = "Syria";
+          if (countryName === "Lao People's Democratic Republic")
+            countryName = "Laos";
+          if (countryName === "Venezuela (Bolivarian Republic of)")
+            countryName = "Venezuela";
+          if (countryName === "Bolivia (Plurinational State of)")
+            countryName = "Bolivia";
+          if (countryName === "Iran (Islamic Republic of)")
+            countryName = "Iran";
+          if (
+            countryName ===
+            "United Kingdom of Great Britain and Northern Ireland"
+          )
+            countryName = "United Kingdom";
+          if (countryName === "Korea (Republic of)")
+            countryName = "South Korea";
           return countriesArrayCode.push(...allCountriesAPICode, [
-            country.alpha3Code,
-            country.name,
+            countryCode,
+            countryName,
           ]);
         });
       allCountriesAPICode.length === 0 &&
@@ -61,10 +79,10 @@ const Home = () => {
     loads the infected number for each country
   */
   async function insertInfected() {
-    let arrayOfCountries = [];
+    let arrayOfCountries = [mapDataConfig];
     try {
       allCountriesAPICode.map((countryCode) => {
-        const response = axios
+        axios
           .get(`https://covidapi.info/api/v1/country/${countryCode[0]}/latest`)
           .then((response) => {
             var countriesData = response.data.result;
@@ -72,7 +90,7 @@ const Home = () => {
               let infectedByCountry = countriesData[countryData].confirmed;
               let countryElement = [countryCode[1], infectedByCountry];
               arrayOfCountries.push(countryElement);
-              setAllCountriesAPI(arrayOfCountries);
+              return setAllCountriesAPI(arrayOfCountries);
             });
           })
           .catch((e) => {});
@@ -80,7 +98,9 @@ const Home = () => {
     } catch (e) {
       console.error(e.message);
     } finally {
-      setTimeout(setLoad(true), 5000);
+      setTimeout(() => {
+        if (allCountriesAPI) return setLoad(true), 2000;
+      });
     }
   }
 
@@ -115,10 +135,6 @@ const Home = () => {
         height: "auto",
       }}
     >
-      {allCountriesAPI.length > 0 &&
-        setTimeout(() => console.log(allCountriesAPI), 5000)}
-      {allCountries.length > 0 &&
-        setTimeout(() => console.log(allCountries), 5000)}
       {load && (
         <div className='App'>
           <Chart
@@ -129,7 +145,7 @@ const Home = () => {
                   const chart = chartWrapper.getChart();
                   const selection = chart.getSelection();
                   if (selection.length === 0) return;
-                  const region = mapData[selection[0].row + 1];
+                  const region = allCountriesAPI[selection[0].row + 1];
                   console.log("Selected : " + region);
                 },
               },
@@ -137,7 +153,7 @@ const Home = () => {
             chartType='GeoChart'
             width='100%'
             height='400px'
-            data={mapData}
+            data={allCountriesAPI}
           />
         </div>
       )}
