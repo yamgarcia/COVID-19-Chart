@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import logo from "../../logo.svg";
 import { Chart } from "react-google-charts";
 
 // https://react-google-charts.com/geo-chart
@@ -7,8 +8,6 @@ import { Chart } from "react-google-charts";
 
 const Home = () => {
   const [cases, setCases] = useState([]);
-  const [current, setCurrent] = useState(0);
-  const [brazilTotal, setBrazilTotal] = useState(0);
   const [load, setLoad] = useState(false);
   const [allCountriesAPI, setAllCountriesAPI] = useState([]);
   const [allCountriesAPICode, setAllCountriesAPICode] = useState([]);
@@ -23,24 +22,26 @@ const Home = () => {
     loadDays();
     insertInfected();
   */
-  async function loadCountries() {
+  const loadCountries = async () => {
     try {
-      const response = await axios.get("https://restcountries.eu/rest/v2/all");
+      const { data } = await axios.get("https://restcountries.eu/rest/v2/all");
 
       //? get the codes into countriesArrayCode array
       const countriesArrayCode = [];
       countriesArrayCode.length === 0 &&
-        response.data.map((country) => {
+        data.map((country) => {
           let countryCode = country.alpha3Code;
           let countryName = country.name;
           if (countryName === "United States of America")
             countryName = "United States";
           if (countryName === "Russian Federation") countryName = "Russia";
+          if (countryName === "Côte d'Ivoire") countryName = "CI";
+          if (countryName === "South Sudan") countryName = "SS";
           if (countryName === "Tanzania, United Republic of")
             countryName = "Tanzania";
           if (countryName === "Moldova (Republic of)") countryName = "Moldova";
           if (countryName === "Congo (Democratic Republic of the)")
-            countryName = "Democratic Republic of the Congo";
+            countryName = "CD";
           if (countryName === "Macedonia (the former Yugoslav Republic of)")
             countryName = "Macedonia";
           if (countryName === "Viet Nam") countryName = "Vietnam";
@@ -70,10 +71,9 @@ const Home = () => {
     } catch (e) {
       console.error(e.message);
     } finally {
-      loadDays();
       insertInfected();
     }
-  }
+  };
 
   /*
     loads the infected number for each country
@@ -98,33 +98,7 @@ const Home = () => {
     } catch (e) {
       console.error(e.message);
     } finally {
-      setTimeout(() => {
-        if (allCountriesAPI) return setLoad(true), 2000;
-      });
-    }
-  }
-
-  /*
-  loads the cases and for now the brazil number of infected
-  */
-  async function loadDays() {
-    try {
-      const response = await axios.get(
-        "https://covidapi.info/api/v1/country/BRA"
-      );
-      const dataCount = response.data.count;
-      const dataDay = response.data.result;
-
-      const array = [];
-      Object.keys(dataDay).map((day, i) => {
-        const caseObj = dataDay[day];
-        array.push(caseObj);
-        return setBrazilTotal(dataDay[day].confirmed);
-      });
-      setCases(...cases, array);
-      setCurrent(dataCount);
-    } catch (e) {
-      console.error(e.message);
+      if (allCountriesAPI) return setLoad(true);
     }
   }
 
@@ -133,9 +107,11 @@ const Home = () => {
       style={{
         width: "700px",
         height: "auto",
+        textAllign: "center",
       }}
     >
-      {load && (
+      {console.log(allCountriesAPI)}
+      {load ? (
         <div className='App'>
           <Chart
             chartEvents={[
@@ -156,17 +132,11 @@ const Home = () => {
             data={allCountriesAPI}
           />
         </div>
+      ) : (
+        <>
+          <img src={logo} className='App-logo' alt='logo' />
+        </>
       )}
-      <h3>Total Days: {current}</h3>
-
-      <ul>
-        {cases.length > 0 &&
-          cases.map((day, i) => (
-            <li key={i}>
-              <span>{JSON.stringify(day.confirmed)}</span>
-            </li>
-          ))}
-      </ul>
     </div>
   );
 };
