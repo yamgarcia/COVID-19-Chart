@@ -13,6 +13,8 @@
 
 <div class="flex-container">
  <img src="/screenshots/covid-Map.jpg" width="610px;" alt="covid-map"/>
+ <img src="/screenshots/covid.png" width="610px;" alt="covid-map"/>
+ <img src="/screenshots/covid2.png" width="610px;" alt="covid-map"/>
 </div>
 </div>
 
