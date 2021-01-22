@@ -43,6 +43,7 @@ const Info = () => {
       const allCountriesAPICode = await loadCountries();
       setMapData(await insertInfected(allCountriesAPICode));
     }
+    
     getAPIData();
   }, []);
 
